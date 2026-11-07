@@ -24,6 +24,20 @@ npm run build
 
 Upload the `dist/` folder to any static HTTPS host, for example by dragging it onto https://app.netlify.com/drop, or by using GitHub Pages or Vercel. Open the link on the phone and choose **Add to Home Screen**. It then opens full screen like a native app and works offline.
 
+## Build the Android APK
+
+The project includes a ready Android app (Capacitor) in `android/`, with camera permission set up.
+
+**Option A: GitHub builds it for you (no Android tools needed).** Push this folder to a GitHub repository. The included workflow `.github/workflows/android-apk.yml` builds the APK on every push to `main`. Open the repo's **Actions** tab, then the latest "Build Android APK" run, and download **ShelfSense-AR-apk**. Copy `app-debug.apk` to your phone and open it (allow "Install unknown apps" once).
+
+**Option B: on your own computer.** Install Android Studio (it brings the Android SDK), then run:
+
+```bash
+npm install
+npm run apk        # APK at android/app/build/outputs/apk/debug/app-debug.apk
+# or: npm run android   (opens the project in Android Studio, then Build > Build APK)
+```
+
 ## Using it
 
 1. **Start scanning** and aim at a shelf from 0.5 to 2 m away.

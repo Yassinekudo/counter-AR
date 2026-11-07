@@ -1,0 +1,6 @@
+{
+  "appId": "com.shelfsense.ar",
+  "appName": "ShelfSense AR",
+  "webDir": "dist",
+  "android": { "allowMixedContent": false }
+}
