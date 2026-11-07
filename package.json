@@ -1,0 +1,16 @@
+{
+  "name": "shelfsense-ar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Count products on a store shelf with your live camera and AR labels.",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "vite": "^8.3.6"
+  }
+}

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#070a14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ShelfSense AR</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="./assets/index-CL6QCg6P.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-C5GCYCin.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><div class="grid-floor"></div></div>
+
+  <!-- ============ MAIN MENU ============ -->
+  <section class="screen" id="menu" data-active>
+    <header class="menu-head">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3cf0ff"/><stop offset="1" stop-color="#9b6bff"/></linearGradient></defs>
+          <rect x="6" y="6" width="52" height="52" rx="16" fill="none" stroke="url(#lg)" stroke-width="3"/>
+          <path d="M18 24v-6h6M46 24v-6h-6M18 40v6h6M46 40v6h-6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="26" y="25" width="5" height="14" rx="2" fill="#3cf0ff"/><rect x="33" y="22" width="5" height="17" rx="2" fill="#9b6bff"/>
+        </svg>
+        <span class="ring r1"></span><span class="ring r2"></span>
+      </div>
+      <p class="eyebrow">AR inventory counter</p>
+      <h1>ShelfSense<span>AR</span></h1>
+      <p class="tagline">Point at a shelf, tap a product, and every matching item is counted live, with floating labels that stay on the shelf.</p>
+    </header>
+
+    <div class="cta-row">
+      <button class="btn primary xl" data-action="start-camera"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>Start scanning</button>
+      <button class="btn ghost" data-action="start-demo"><svg viewBox="0 0 24 24"><path d="M7 5v14l11-7z"/></svg>Try the demo shelf</button>
+    </div>
+
+    <div class="stats" id="menu-stats"></div>
+
+    <nav class="cards">
+      <button class="card" data-go="library"><span class="ic c1"><svg viewBox="0 0 24 24"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z"/></svg></span><b>Product library</b><small>Saved names &amp; templates</small></button>
+      <button class="card" data-go="history"><span class="ic c2"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4M12 8v4l3 2"/></svg></span><b>Count history</b><small>Every saved count, exportable</small></button>
+      <button class="card" data-go="settings"><span class="ic c3"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><b>Settings</b><small>60 fps, sensitivity, HUD</small></button>
+      <button class="card" data-go="howto"><span class="ic c4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg></span><b>How it works</b><small>Tips for accurate counts</small></button>
+    </nav>
+    <p class="foot">All processing happens on your device. Nothing is uploaded.</p>
+  </section>
+
+  <!-- ============ SCANNER ============ -->
+  <section class="screen scan" id="scan">
+    <div class="stage" id="stage">
+      <video id="video" playsinline muted autoplay></video>
+      <canvas id="overlay"></canvas>
+      <div class="reticle" id="reticle"><i></i><i></i><i></i><i></i></div>
+      <div class="dragbox" id="dragbox" hidden></div>
+    </div>
+
+    <div class="topbar">
+      <button class="icon-btn glass" data-action="exit-scan" aria-label="Back to menu"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="chip glass" id="title-chip"><span class="dot"></span><span id="title-text">Select a product</span></div>
+      <div class="perf glass" id="perf"><b id="perf-cam">--</b><small>cam fps</small><b id="perf-ui">--</b><small>AR fps</small></div>
+    </div>
+
+    <div class="hint glass" id="hint">Tap a product, or drag a box around it</div>
+
+    <div class="dock" id="dock" hidden>
+      <div class="count-card glass">
+        <div class="count-main"><span class="count-label">Total counted</span><span class="count-num" id="count-num">0</span></div>
+        <div class="count-sub"><span id="count-inview">0 in view</span><span class="sep"></span><span id="count-track" class="track">Tracking</span></div>
+      </div>
+      <div class="tools">
+        <button class="tool glass" data-action="toggle-lock" id="btn-lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Lock</span></button>
+        <button class="tool glass" data-action="toggle-tune"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Tune</span></button>
+        <button class="tool primary" data-action="save-count"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg><span>Save</span></button>
+        <button class="tool glass" data-action="rescan"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/></svg><span>Recount</span></button>
+        <button class="tool glass" data-action="new-select"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button>
+      </div>
+      <div class="tune glass" id="tune" hidden>
+        <label>Match sensitivity <output id="sens-out">50%</output></label>
+        <input type="range" id="sens" min="0" max="1" step="0.05" />
+        <p>Lower if other products are counted, higher if items are missed. Tap an item to remove it, tap empty shelf to add one.</p>
+      </div>
+    </div>
+
+    <!-- confirm sheet -->
+    <div class="sheet glass" id="sheet" hidden>
+      <div class="grab"></div>
+      <div class="sheet-row">
+        <img id="sheet-thumb" alt="Selected product" />
+        <div class="sheet-body">
+          <p class="eyebrow">Selected object</p>
+          <input id="sheet-name" type="text" maxlength="40" placeholder="Name this product (e.g. Cola 330ml)" autocomplete="off" />
+          <div class="suggest" id="sheet-suggest"></div>
+        </div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn ghost" data-action="retake">Retake</button>
+        <button class="btn primary" data-action="confirm">Count all matching</button>
+      </div>
+    </div>
+
+    <div class="error-card glass" id="cam-error" hidden>
+      <h3>Camera unavailable</h3>
+      <p id="cam-error-text"></p>
+      <div class="sheet-actions">
+        <button class="btn ghost" data-action="exit-scan">Back</button>
+        <button class="btn primary" data-action="start-demo">Use demo shelf</button>
+      </div>
+    </div>
+    <div class="flash" id="flash"></div>
+  </section>
+
+  <!-- ============ LIBRARY ============ -->
+  <section class="screen page" id="library">
+    <header class="page-head"><button class="icon-btn glass" data-go="menu" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>Product library</h2></header>
+    <div class="list" id="library-list"></div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section class="screen page" id="history">
+    <header class="page-head"><button class="icon-btn glass" data-go="menu" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>Count history</h2>
+      <button class="btn small ghost" data-action="export-csv">Export CSV</button></header>
+    <div class="list" id="history-list"></div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section class="screen page" id="settings">
+    <header class="page-head"><button class="icon-btn glass" data-go="menu" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>Settings</h2></header>
+    <div class="form">
+      <div class="field glass"><div><b>Camera frame rate</b><small>60 fps for the smoothest preview. 30 saves battery.</small></div>
+        <div class="seg" data-setting="fps"><button data-v="60">60</button><button data-v="30">30</button></div></div>
+      <div class="field glass"><div><b>Camera resolution</b><small>720p is fastest. 1080p sees small items further away.</small></div>
+        <div class="seg" data-setting="resolution"><button data-v="720">720p</button><button data-v="1080">1080p</button></div></div>
+      <div class="field glass col"><div><b>Default match sensitivity</b><small>How similar an item must look to be counted.</small></div>
+        <input type="range" min="0" max="1" step="0.05" data-setting="sensitivity" /></div>
+      <div class="field glass"><div><b>Performance HUD</b><small>Show live camera and AR frame rates.</small></div><label class="switch"><input type="checkbox" data-setting="showPerf" /><span></span></label></div>
+      <div class="field glass"><div><b>Haptics</b><small>Vibrate when the count changes.</small></div><label class="switch"><input type="checkbox" data-setting="haptics" /><span></span></label></div>
+      <div class="field glass"><div><b>Show raw detections</b><small>Developer view of the matcher output.</small></div><label class="switch"><input type="checkbox" data-setting="debug" /><span></span></label></div>
+      <button class="btn danger" data-action="reset-all">Erase all saved data</button>
+    </div>
+  </section>
+
+  <!-- ============ HOW TO ============ -->
+  <section class="screen page" id="howto">
+    <header class="page-head"><button class="icon-btn glass" data-go="menu" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>How it works</h2></header>
+    <ol class="steps">
+      <li class="glass"><b>Aim at the shelf</b><span>Hold the phone 0.5 to 2 m away so a whole row fits on screen.</span></li>
+      <li class="glass"><b>Tap one product</b><span>The app outlines it. If the box is off, drag a box around the product instead.</span></li>
+      <li class="glass"><b>Name it</b><span>The name floats above the product in AR and is saved to your library.</span></li>
+      <li class="glass"><b>Sweep slowly</b><span>Every matching item gets a numbered pin that stays put as you move. Items you have passed still count.</span></li>
+      <li class="glass"><b>Fix and save</b><span>Tap a wrong item to remove it, tap a missed one to add it, then press Save.</span></li>
+    </ol>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
